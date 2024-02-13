@@ -12,7 +12,7 @@ import java.util.Optional;
 import com.epf.rentmanager.persistence.ConnectionManager;
 
 public class VehicleDao {
-	
+	//yolo
 	private static VehicleDao instance = null;
 	private VehicleDao() {}
 	public static VehicleDao getInstance() {
