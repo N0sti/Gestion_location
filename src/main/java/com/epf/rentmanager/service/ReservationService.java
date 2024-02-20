@@ -12,11 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ReservationService {
-
+    public static ReservationService instance;
     private final ReservationDao reservationDao;
 
-    public ReservationService(ReservationDao reservationDao) {
-        this.reservationDao = reservationDao;
+    private ReservationService() {
+        this.reservationDao = ReservationDao.getInstance();
     }
 
     public long create(Reservation reservation) throws ServiceException {
@@ -88,5 +88,11 @@ public class ReservationService {
             e.printStackTrace();
             throw new ServiceException();
         }
+    }
+    public static ReservationService getInstance() {
+        if (instance == null) {
+            instance = new ReservationService();
+        }
+        return instance;
     }
 }

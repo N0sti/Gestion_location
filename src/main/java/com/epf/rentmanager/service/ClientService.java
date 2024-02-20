@@ -10,6 +10,7 @@ import com.epf.rentmanager.exception.ClientException;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Client;
+import com.epf.rentmanager.model.Reservation;
 
 public class ClientService {
 
@@ -62,4 +63,19 @@ public class ClientService {
 			throw new ServiceException();
 		}
 	}
+
+	public long delete(Client client) throws ServiceException {
+		try {
+			for (Reservation res : ReservationService.getInstance()
+					.findResaByClientId(client.getId())) {
+				/* Reservations from a client can be deleted if the client is removed. */
+				ReservationService.getInstance().delete(res);
+			}
+			return ClientDao.getInstance().delete(client);
+		} catch (DaoException e) {
+			e.printStackTrace();
+			throw new ServiceException(e);
+		}
+	}
+
 }
