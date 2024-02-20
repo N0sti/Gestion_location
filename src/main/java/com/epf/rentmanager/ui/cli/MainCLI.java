@@ -2,18 +2,22 @@ package com.epf.rentmanager.ui.cli;
 
 import com.epf.rentmanager.utils.IOUtils;
 
+import java.sql.SQLException;
+
+import static com.epf.rentmanager.persistence.FillDatabase.insertWithPreparedStatement;
+
 public class MainCLI {
     private static boolean fin = false;
-
-    public static void main(String[] args) {
+    private static boolean permier = true;
+    public static void main(String[] args) throws SQLException {
         System.out.println("Bonjour");
         while (!fin) {
             afficherMenu();
         }
     }
 
-    public static void afficherMenu() {
-        IOUtils.print("Que voulez-vous faire ?");
+    public static void afficherMenu() throws SQLException {
+        IOUtils.print("Que voulez-vous faire?");
         IOUtils.print("""
                     [1] Lister des enregistrements
                     [2] Créer des enregistrements
@@ -33,7 +37,7 @@ public class MainCLI {
         }
     }
 
-    public static void displayListOptions() {
+    public static void displayListOptions() throws SQLException {
         IOUtils.print("""
                     [1] Lister les clients
                     [2] Lister les véhicules
@@ -41,10 +45,14 @@ public class MainCLI {
                     [4] Quitter le programme""");
 
         int choice = IOUtils.readInt("Entrez votre choix : ");
+        if (permier == true) {
+            insertWithPreparedStatement();
+            permier=false;
+        }
         switch (choice) {
             case 1 -> ClientCLI.listClients();
-            case 2 -> ClientCLI.listClients();
-            case 3 -> ClientCLI.listClients();
+            case 2 -> VehiculeCLI.listVehicles();
+            case 3 -> ReservationCLI.listReservation();
             case 4 -> {
                 IOUtils.print("Au revoir !");
                 fin = true;
@@ -53,7 +61,7 @@ public class MainCLI {
         }
     }
 
-    public static void displayCreateOptions() {
+    public static void displayCreateOptions() throws SQLException {
         IOUtils.print("""
                     [1] Créer un client
                     [2] Créer un véhicule
@@ -61,10 +69,14 @@ public class MainCLI {
                     [4] Quitter le programme""");
 
         int choice = IOUtils.readInt("Entrez votre choix : ");
+        if (permier == true) {
+            insertWithPreparedStatement();
+            permier=false;
+        }
         switch (choice) {
             case 1 -> ClientCLI.createClient();
-            case 2 -> ClientCLI.createClient();
-            case 3 -> ClientCLI.createClient();
+            case 2 -> VehiculeCLI.createVehicle();
+            case 3 -> ReservationCLI.createReservation();
             case 4 -> {
                 IOUtils.print("Au revoir !");
                 fin = true;
@@ -73,20 +85,24 @@ public class MainCLI {
         }
     }
 
-    public static void displayDeleteOptions() {
+    public static void displayDeleteOptions() throws SQLException {
         IOUtils.print("""
                     [1] Supprimer un client
                     [2] Supprimer un véhicule
                     [3] Supprimer une réservation
                     [4] Quitter le programme""");
 
-        int choice = IOUtils.readInt("Entrez votre choix : ");
+        int choice = IOUtils.readInt("Entrez votre choix: ");
+        if (permier == true) {
+            insertWithPreparedStatement();
+            permier=false;
+        }
         switch (choice) {
             case 1 -> ClientCLI.deleteClient();
-            case 2 -> ClientCLI.deleteClient();
-            case 3 -> ClientCLI.deleteClient();
+            case 2 -> VehiculeCLI.deleteVehicle();
+            case 3 -> ReservationCLI.deleteReservation();
             case 4 -> {
-                IOUtils.print("Au revoir !");
+                IOUtils.print("Au revoir!");
                 fin = true;
             }
             default -> IOUtils.print("Option invalide.");

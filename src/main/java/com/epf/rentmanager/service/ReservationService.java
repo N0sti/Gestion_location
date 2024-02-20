@@ -2,9 +2,11 @@ package com.epf.rentmanager.service;
 
 
 import com.epf.rentmanager.dao.ReservationDao;
+import com.epf.rentmanager.dao.VehicleDao;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Reservation;
+import com.epf.rentmanager.model.Vehicle;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -18,7 +20,13 @@ public class ReservationService {
     private ReservationService() {
         this.reservationDao = ReservationDao.getInstance();
     }
+    public static ReservationService getInstance() {
+        if (instance == null) {
+            instance = new ReservationService();
+        }
 
+        return instance;
+    }
     public long create(Reservation reservation) throws ServiceException {
         try {
             LocalDate beginDate = reservation.getDebut();
@@ -75,6 +83,15 @@ public class ReservationService {
         }
     }
 
+    public void modify(long id, Reservation newData) throws ServiceException {
+        try {
+            reservationDao.update(id, newData);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            throw new ServiceException(e);
+        }
+    }
+
     public List<Reservation> findAll() throws ServiceException {
         try {
             List<Reservation> reservation = new ArrayList<Reservation>();
@@ -89,10 +106,13 @@ public class ReservationService {
             throw new ServiceException();
         }
     }
-    public static ReservationService getInstance() {
-        if (instance == null) {
-            instance = new ReservationService();
+
+    public Vehicle findById(long id) throws ServiceException {
+        try {
+            return VehicleDao.getInstance().findById(id);
+        } catch (DaoException e) {
+            e.printStackTrace();
+            throw new ServiceException(e);
         }
-        return instance;
     }
 }
