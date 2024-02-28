@@ -75,8 +75,7 @@ public class VehicleService {
 
 	public long delete(Vehicle vehicle) throws ServiceException {
 		try {
-			for (Reservation res : ReservationService.getInstance()
-					.findResaByVehicleId(vehicle.getId())) {
+			for (Reservation res : ReservationService.getInstance().findResaByVehicleId(vehicle.getId())) {
 				/* Remove vehicle from reservations */
 				res.setVehicle(null);
 				ReservationService.getInstance().modify(res.getId(), res);

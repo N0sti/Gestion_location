@@ -66,12 +66,19 @@ public class ClientService {
 
 	public long delete(Client client) throws ServiceException {
 		try {
-			for (Reservation res : ReservationService.getInstance()
-					.findResaByClientId(client.getId())) {
+			for (Reservation res : ReservationService.getInstance().findResaByClientId(client.getId())) {
 				/* Reservations from a client can be deleted if the client is removed. */
 				ReservationService.getInstance().delete(res);
 			}
 			return ClientDao.getInstance().delete(client);
+		} catch (DaoException e) {
+			e.printStackTrace();
+			throw new ServiceException(e);
+		}
+	}
+	public int count() throws ServiceException {
+		try {
+			return clientDao.count();
 		} catch (DaoException e) {
 			e.printStackTrace();
 			throw new ServiceException(e);

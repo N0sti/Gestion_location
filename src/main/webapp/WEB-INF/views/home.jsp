@@ -32,7 +32,7 @@
 
             <div class="info-box-content">
               <span class="info-box-text">Utilisateurs</span>
-              <span class="info-box-number">3</span>
+              <span class="info-box-number">${cptUser}</span>
             </div>
             <!-- /.info-box-content -->
           </div>
@@ -62,7 +62,7 @@
 
             <div class="info-box-content">
               <span class="info-box-text">Reservations</span>
-              <span class="info-box-number">2</span>
+              <span class="info-box-number">${cptRent}</span>
             </div>
             <!-- /.info-box-content -->
           </div>
