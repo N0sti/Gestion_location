@@ -35,7 +35,6 @@ public class ClientDao {
 		long ID = 0;
 		try {
 			Connection connection = ConnectionManager.getConnection();
-			System.out.println("rrrrrrrrrrrrrr");
 			PreparedStatement preparedStatement = connection.prepareStatement(CREATE_CLIENT_QUERY, Statement.RETURN_GENERATED_KEYS);
 			preparedStatement.setString(1, client.getNom());
 			preparedStatement.setString(2, client.getPrenom());

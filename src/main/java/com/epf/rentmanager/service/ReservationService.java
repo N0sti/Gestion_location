@@ -107,9 +107,9 @@ public class ReservationService {
         }
     }
 
-    public Vehicle findById(long id) throws ServiceException {
+    public Reservation findById(long id) throws ServiceException {
         try {
-            return VehicleDao.getInstance().findById(id);
+            return ReservationDao.getInstance().findById(id);
         } catch (DaoException e) {
             e.printStackTrace();
             throw new ServiceException(e);

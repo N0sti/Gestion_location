@@ -105,14 +105,6 @@
 					<artifactId>tomcat7-maven-plugin</artifactId>
 					<version>2.2</version>
 				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.4.0</version>
-					<configuration>
-						<mainClass>com.epf.rentmanager.persistence.FillDatabase</mainClass>
-					</configuration>
-				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
