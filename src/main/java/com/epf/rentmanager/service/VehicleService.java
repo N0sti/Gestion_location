@@ -77,8 +77,7 @@ public class VehicleService {
 		try {
 			for (Reservation res : ReservationService.getInstance().findResaByVehicleId(vehicle.getId())) {
 				/* Remove vehicle from reservations */
-				res.setVehicle(null);
-				ReservationService.getInstance().modify(res.getId(), res);
+				ReservationService.getInstance().delete(res);
 			} return VehicleDao.getInstance().delete(vehicle);
 		} catch (DaoException e) {
 			e.printStackTrace();
