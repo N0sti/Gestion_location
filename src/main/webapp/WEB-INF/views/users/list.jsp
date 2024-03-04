@@ -45,7 +45,7 @@
                                         <a class="btn btn-primary" href="${pageContext.request.contextPath}/users/details?id=${client.getId()}">
                                         <i class="fa fa-play"></i>
                                         </a>
-                                        <a class="btn btn-success" href="#">
+                                        <a class="btn btn-success" href="${pageContext.request.contextPath}/users/modify?id=${client.getId()}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                         <a class="btn btn-danger" href="${pageContext.request.contextPath}/users/delete?id=${client.getId()}">

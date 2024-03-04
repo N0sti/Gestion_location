@@ -7,7 +7,7 @@ import com.epf.rentmanager.utils.IOUtils;
 import java.util.List;
 
 public class ClientCLI {
-    public static void listClients() {
+    /*public static void listClients() {
         try {
             for (Client client : ClientService.getInstance().findAll()) {
                 IOUtils.print(client.toString());
@@ -67,4 +67,6 @@ public class ClientCLI {
         } catch (ServiceException e) {
             e.printStackTrace();
         }
-    }}
+    }*/
+    }
+

@@ -50,10 +50,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label for="date_naissance" class="col-sm-2 control-label">Nom</label>
+                                    <label for="date_naissance" class="col-sm-2 control-label">date de naissance</label>
 
                                     <div class="col-sm-10">
-                                        <input type="date_naissance" class="form-control" id="date_naissance" name="date_naissance" required data-inputmask="'alias': 'yyyy-mm-dd'" data-mask>
+                                        <input type="date_naissance" class="form-control" id="date_naissance" name="date_naissance" placeholder="yyyy-mm-dd" required data-inputmask="'alias': 'yyyy-mm-dd'" data-mask>
                                     </div>
                                 </div>
 
@@ -78,5 +78,13 @@
 <!-- ./wrapper -->
 
 <%@ include file="/WEB-INF/views/common/js_imports.jsp" %>
+<script src="${pageContext.request.contextPath}/resources/plugins/input-mask/jquery.inputmask.js"></script>
+<script src="${pageContext.request.contextPath}/resources/plugins/input-mask/jquery.inputmask.date.extensions.js"></script>
+<script src="${pageContext.request.contextPath}/resources/plugins/input-mask/jquery.inputmask.extensions.js"></script>
+<script>
+    $(function () {
+        $('[data-mask]').inputmask()
+    });
+</script>
 </body>
 </html>

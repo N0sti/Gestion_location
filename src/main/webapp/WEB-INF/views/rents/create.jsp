@@ -33,7 +33,7 @@
                                     <div class="col-sm-10">
                                         <select class="form-control" id="vehicle" name="vehicle">
                                              <c:forEach items="${vehicles}" var="vehicle">
-                                             <option value="${vehicle.id}">${vehicle.modele} ${vehicle.constructeur}</option>
+                                             <option value="${vehicle.id}">${vehicle.modele} ${vehicle.constructeur} / ${vehicle.nb_places} places</option>
                                              </c:forEach>
                                          </select>
                                     </div>
@@ -53,7 +53,7 @@
                                     <label for="begin" class="col-sm-2 control-label">Date de debut</label>
 
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="begin" name="begin" required
+                                        <input type="text" class="form-control" id="begin" name="begin" placeholder="yyyy-mm-dd" required
                                                data-inputmask="'alias': 'yyyy-mm-dd'" data-mask>
                                     </div>
                                 </div>
@@ -61,7 +61,7 @@
                                     <label for="end" class="col-sm-2 control-label">Date de fin</label>
 
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="end" name="end" required
+                                        <input type="text" class="form-control" id="end" name="end" placeholder="yyyy-mm-dd" required
                                                data-inputmask="'alias': 'yyyy-mm-dd'" data-mask>
                                     </div>
                                 </div>

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ReservationCLI {
-    public static void listReservation() {
+    /*public static void listReservation() {
         try {
             for (Reservation reservation : ReservationService.getInstance().findAll()) {
                 IOUtils.print(reservation.toString());
@@ -69,6 +69,6 @@ public class ReservationCLI {
         } catch (ServiceException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 }

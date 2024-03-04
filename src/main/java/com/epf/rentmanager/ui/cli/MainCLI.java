@@ -11,12 +11,12 @@ public class MainCLI {
     private static boolean permier = true;
     public static void main(String[] args) throws SQLException {
         System.out.println("Bonjour");
-        while (!fin) {
-            afficherMenu();
-        }
+        //while (!fin) {
+          // afficherMenu();
+        //}
     }
 
-    public static void afficherMenu() throws SQLException {
+    /*public static void afficherMenu() throws SQLException {
         IOUtils.print("Que voulez-vous faire?");
         IOUtils.print("""
                     [1] Lister des enregistrements
@@ -35,9 +35,9 @@ public class MainCLI {
             }
             default -> IOUtils.print("Option invalide.");
         }
-    }
+    }*/
 
-    public static void displayListOptions() throws SQLException {
+    /*public static void displayListOptions() throws SQLException {
         IOUtils.print("""
                     [1] Lister les clients
                     [2] Lister les véhicules
@@ -59,9 +59,9 @@ public class MainCLI {
             }
             default -> IOUtils.print("Option invalide.");
         }
-    }
+    }*/
 
-    public static void displayCreateOptions() throws SQLException {
+    /*public static void displayCreateOptions() throws SQLException {
         IOUtils.print("""
                     [1] Créer un client
                     [2] Créer un véhicule
@@ -83,9 +83,9 @@ public class MainCLI {
             }
             default -> IOUtils.print("Option invalide.");
         }
-    }
+    }*/
 
-    public static void displayDeleteOptions() throws SQLException {
+    /*public static void displayDeleteOptions() throws SQLException {
         IOUtils.print("""
                     [1] Supprimer un client
                     [2] Supprimer un véhicule
@@ -107,7 +107,7 @@ public class MainCLI {
             }
             default -> IOUtils.print("Option invalide.");
         }
-    }
+    }*/
 
 
 }

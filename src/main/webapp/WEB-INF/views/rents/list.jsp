@@ -36,15 +36,15 @@
                                 </tr>
                                 <c:forEach items="${reservations}" var="reservation">
                                     <td>${reservation.getId()}</td>
-                                    <td>id veicule=${reservation.getVehicle().getId()} ${reservation.getVehicle().getConstructeur()} ${reservation.getVehicle().getModele()} (${reservation.getVehicle().getNb_places()} places)</td>
-                                    <td>id client=${reservation.getClient().getId()} ${reservation.getClient().getNom()} ${reservation.getClient().getPrenom()}</td>
+                                    <td>${reservation.getVehicle().getConstructeur()} ${reservation.getVehicle().getModele()}</td>
+                                    <td>${reservation.getClient().getNom()} ${reservation.getClient().getPrenom()}</td>
                                     <td>${reservation.getDebut()}</td>
                                     <td>${reservation.getFin()}</td>
                                     <td>
-                                        <a class="btn btn-primary" href="#">
+                                        <a class="btn btn-primary" href="${pageContext.request.contextPath}/rents/details?id=${reservation.id}">
                                             <i class="fa fa-play"></i>
                                         </a>
-                                        <a class="btn btn-success disabled" href="#">
+                                        <a class="btn btn-success" href="${pageContext.request.contextPath}/rents/modify?id=${reservation.id}">
                                             <i class="fa fa-edit"></i>
                                         </a>
                                         <a class="btn btn-danger" href="${pageContext.request.contextPath}/rents/delete?id=${reservation.id}">

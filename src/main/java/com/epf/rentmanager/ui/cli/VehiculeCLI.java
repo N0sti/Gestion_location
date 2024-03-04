@@ -8,7 +8,7 @@ import com.epf.rentmanager.utils.IOUtils;
 import java.util.List;
 
 public class VehiculeCLI {
-    public static void listVehicles() {
+    /*public static void listVehicles() {
         try {
             for (Vehicle vehicle : VehicleService.getInstance().findAll()) {
                 IOUtils.print(vehicle.toString());
@@ -67,5 +67,5 @@ public class VehiculeCLI {
         } catch (ServiceException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

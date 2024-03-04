@@ -2,6 +2,7 @@ package com.epf.rentmanager.service;
 
 import java.util.List;
 
+import com.epf.rentmanager.dao.ReservationDao;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Client;
@@ -9,24 +10,18 @@ import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.dao.ClientDao;
 import com.epf.rentmanager.dao.VehicleDao;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VehicleService {
 
+	@Autowired
 	private VehicleDao vehicleDao;
-	public static VehicleService instance;
-	
-	private VehicleService() {
-		this.vehicleDao = VehicleDao.getInstance();
+	public VehicleService(VehicleDao vehicleDao) {
+		this.vehicleDao = vehicleDao;
 	}
-	
-	public static VehicleService getInstance() {
-		if (instance == null) {
-			instance = new VehicleService();
-		}
-		
-		return instance;
-	}
-
+	public VehicleService() {}
 
 	public long create(Vehicle vehicle) throws ServiceException {
 		try {
@@ -75,9 +70,9 @@ public class VehicleService {
 
 	public long delete(Vehicle vehicle) throws ServiceException {
 		try {
-			for (Reservation res : ReservationService.getInstance().findResaByVehicleId(vehicle.getId())) {
-				/* Remove vehicle from reservations */
-				ReservationService.getInstance().delete(res);
+			ReservationService rs = new ReservationService(new ReservationDao());
+			for (Reservation rent : rs.findResaByVehicleId(vehicle.getId())) {
+				rs.delete(rent);
 			} return VehicleDao.getInstance().delete(vehicle);
 		} catch (DaoException e) {
 			e.printStackTrace();

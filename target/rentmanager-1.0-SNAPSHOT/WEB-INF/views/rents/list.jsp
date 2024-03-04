@@ -34,43 +34,27 @@
                                     <th>Fin</th>
                                     <th>Action</th>
                                 </tr>
-                                <tr>
-                                    <td>1.</td>
-                                    <td>Renault Clio</td>
-                                    <td>John Doe</td>
-                                    <td>10/01/2019</td>
-                                    <td>13/01/2019</td>
+                                <c:forEach items="${reservations}" var="reservation">
+                                    <td>${reservation.getId()}</td>
+                                    <td>${reservation.getVehicle().getConstructeur()} ${reservation.getVehicle().getModele()}</td>
+                                    <td>${reservation.getClient().getNom()} ${reservation.getClient().getPrenom()}</td>
+                                    <td>${reservation.getDebut()}</td>
+                                    <td>${reservation.getFin()}</td>
                                     <td>
-                                        <a class="btn btn-primary disabled" href="${pageContext.request.contextPath}/cars?id=1">
+                                        <a class="btn btn-primary" href="${pageContext.request.contextPath}/rents/details?id=${reservation.id}">
                                             <i class="fa fa-play"></i>
                                         </a>
-                                        <a class="btn btn-success disabled" href="#">
+                                        <a class="btn btn-success" href="${pageContext.request.contextPath}/rents/modify?id=${reservation.id}">
                                             <i class="fa fa-edit"></i>
                                         </a>
-                                        <a class="btn btn-danger disabled" href="#">
+                                        <a class="btn btn-danger" href="${pageContext.request.contextPath}/rents/delete?id=${reservation.id}">
                                             <i class="fa fa-trash"></i>
                                         </a>
                                     </td>
                                 </tr>
+                            </c:forEach>
 
-                                <tr>
-                                    <td>2.</td>
-                                    <td>Citroen C2</td>
-                                    <td>Jane Doe</td>
-                                    <td>10/01/2019</td>
-                                    <td>13/01/2019</td>
-                                    <td>
-                                        <a class="btn btn-primary disabled" href="${pageContext.request.contextPath}/cars?id=2">
-                                            <i class="fa fa-play"></i>
-                                        </a>
-                                        <a class="btn btn-success disabled" href="#">
-                                            <i class="fa fa-edit"></i>
-                                        </a>
-                                        <a class="btn btn-danger disabled" href="#">
-                                            <i class="fa fa-trash"></i>
-                                        </a>
-                                    </td>
-                                </tr>
+
                             </table>
                         </div>
                         <!-- /.box-body -->
