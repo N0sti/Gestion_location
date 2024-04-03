@@ -21,7 +21,7 @@ public class ReservationService {
     public ReservationService() {}
     @Autowired
     private ReservationDao reservationDao;
-    ReservationService(ReservationDao ReservationDao){
+    public ReservationService(ReservationDao ReservationDao){
         this.reservationDao = ReservationDao;
     }
 

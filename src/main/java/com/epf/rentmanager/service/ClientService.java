@@ -20,7 +20,7 @@ public class ClientService {
 	@Autowired
 	private ClientDao clientDao;
 	public ClientService(){};
-	private ClientService(ClientDao clientDao){
+	public ClientService(ClientDao clientDao){
 		this.clientDao = clientDao;
 	}
 

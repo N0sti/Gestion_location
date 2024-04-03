@@ -83,14 +83,34 @@ public class ReservationDao {
 				Connection connection = ConnectionManager.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(DELETE_RESERVATION_QUERY)
 		) {
+
 			preparedStatement.setLong(1, reservationId);
 			preparedStatement.execute();
+
+			// Compter le nombre total de réservations restantes
+			int count = count();
+			System.out.println("count" + count);
+
+			// Si le nombre total de réservations est de 0, réinitialiser les ID
+			if (count == 0) {
+				Statement updateStatement = connection.createStatement();
+				updateStatement.executeUpdate("ALTER TABLE Reservation ALTER COLUMN id RESTART WITH 1");
+				updateStatement.close();
+			} else {
+				// decrementer les IDs des réservations restantes
+				PreparedStatement updateStatement = connection.prepareStatement("UPDATE Reservation SET id = id - 1 WHERE id > ?");
+				updateStatement.setLong(1, reservationId);
+				updateStatement.executeUpdate();
+				updateStatement.close();
+			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DaoException(e);
 		}
 		return reservationId;
 	}
+
 
 
 	public List<Reservation> findResaByClientId(long clientId) throws DaoException {

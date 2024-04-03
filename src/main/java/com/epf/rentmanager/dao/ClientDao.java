@@ -28,7 +28,7 @@ public class ClientDao {
 		}
 		return instance;
 	}
-	
+
 	private static final String CREATE_CLIENT_QUERY = "INSERT INTO Client(nom, prenom, email, naissance) VALUES(?, ?, ?, ?);";
 	private static final String DELETE_CLIENT_QUERY = "DELETE FROM Client WHERE id=?;";
 	private static final String FIND_CLIENT_QUERY = "SELECT nom, prenom, email, naissance FROM Client WHERE id=?;";
@@ -38,6 +38,7 @@ public class ClientDao {
 	private static final String COUNT_CLIENTS_QUERY = "SELECT COUNT(id) AS count FROM Client;";
 	public long create(Client client) throws DaoException {
 		long ID = 0;
+		System.out.println("create");
 		try {
 			Connection connection = ConnectionManager.getConnection();
 			PreparedStatement preparedStatement = connection.prepareStatement(CREATE_CLIENT_QUERY, Statement.RETURN_GENERATED_KEYS);
@@ -67,6 +68,21 @@ public class ClientDao {
 		) {
 			preparedStatement.setLong(1, clientId);
 			preparedStatement.execute();
+
+			/*// If client with ID 1 is deleted or there are no more clients left, reset the ID counter
+			if (clientId == 1) {
+				Statement updateStatement = connection.createStatement();
+				updateStatement.executeUpdate("ALTER TABLE Client ALTER COLUMN id RESTART WITH 1");
+				updateStatement.close();
+				System.out.println("clientid"+clientId);
+			}
+
+			// decrement the IDs of remaining clients
+			PreparedStatement updateStatement = connection.prepareStatement("UPDATE Client SET id = id - 1 WHERE id > ?");
+			updateStatement.setLong(1, clientId);
+			updateStatement.executeUpdate();
+			updateStatement.close();*/
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DaoException(e);
