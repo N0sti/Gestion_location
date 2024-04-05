@@ -46,8 +46,8 @@ public class ReservationCreateServlet extends HttpServlet {
         try {
             rent.setVehicle(vehicleService.findById(Integer.parseInt(request.getParameter("vehicle"))));
             rent.setClient(clientService.findById(Integer.parseInt(request.getParameter("client"))));
-            rent.setFin(LocalDate.parse(request.getParameter("begin")));
-            rent.setDebut(LocalDate.parse(request.getParameter("end")));
+            rent.setFin(LocalDate.parse(request.getParameter("end")));
+            rent.setDebut(LocalDate.parse(request.getParameter("begin")));
             reservationService.create(rent);
         } catch (ServiceException e) {
             e.printStackTrace();

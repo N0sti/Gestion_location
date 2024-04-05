@@ -32,8 +32,8 @@ public class ReservationService {
             LocalDate endDate = reservation.getFin();
             Period diff = Period.between(beginDate, endDate);
 
-            if (diff.getMonths() > 6 || diff.getYears() > 0) {
-                throw new ServiceException("Un client ne peut pas louer une meme voiture plus de 6mois d'affiler");
+            if (diff.getDays() > 7 || diff.getMonths() > 0 || diff.getYears() > 0){
+                throw new ServiceException("Un client ne peut pas louer une meme voiture plus de 7jours d'affiler");
             }
 
             return reservationDao.create(reservation);

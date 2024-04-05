@@ -31,6 +31,9 @@ public class VehicleService {
 			if (vehicle.getNb_places() <= 0) {
 				throw new ServiceException("Une voiture a au moins une place");
 			}
+			if (vehicle.getNb_places() < 2 || vehicle.getNb_places() > 9) {
+				throw new ServiceException("Une voiture doit avoir ici 2 à 9 places");
+			}
 			return vehicleDao.create(vehicle);
 		} catch (DaoException e) {
 			e.printStackTrace();
@@ -60,6 +63,9 @@ public class VehicleService {
 		try {
 			if (newVehicle.getNb_places() <= 0) {
 				throw new ServiceException("Une voiture doit avoir au moins une place");
+			}
+			if (newVehicle.getNb_places() < 2 || newVehicle.getNb_places() > 9) {
+				throw new ServiceException("Une voiture doit avoir ici 2 à 9 places");
 			}
 			vehicleDao.update(id, newVehicle);
 		} catch (DaoException e) {
