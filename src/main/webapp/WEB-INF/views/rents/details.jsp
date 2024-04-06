@@ -33,17 +33,21 @@
 
                             </tr>
                             <c:forEach items="${reservations}" var="reservation">
-                                <td>${reservation.getId()}</td>
-                                <td>veicule=${reservation.getVehicle().getId()}</td>
-                                <td>${reservation.getVehicle().getConstructeur()}</td>
-                                <td>${reservation.getVehicle().getModele()}</td>
-                                <td>${reservation.getVehicle().getNb_places()} places</td>
-                                <td>${reservation.getDebut()}</td>
-                                <td>${reservation.getFin()}</td>
-                                <td>${reservation.getClient().getNom()}</td>
-                                <td>${reservation.getClient().getPrenom()}</td>
-                                <td>${reservation.getClient().getEmail()}</td>
-                                <td>${reservation.getClient().getNaissance()}</td>
+                                 <c:if test="${reservation.getId() == param.id}">
+                                    <tr>
+                                        <td>${reservation.getId()}</td>
+                                        <td>${reservation.getVehicle().getId()}</td>
+                                        <td>${reservation.getVehicle().getConstructeur()}</td>
+                                        <td>${reservation.getVehicle().getModele()}</td>
+                                        <td>${reservation.getVehicle().getNb_places()} places</td>
+                                        <td>${reservation.getDebut()}</td>
+                                        <td>${reservation.getFin()}</td>
+                                        <td>${reservation.getClient().getNom()}</td>
+                                        <td>${reservation.getClient().getPrenom()}</td>
+                                        <td>${reservation.getClient().getEmail()}</td>
+                                        <td>${reservation.getClient().getNaissance()}</td>
+                                    </tr>
+                                </c:if>
                             </c:forEach>
                         </table>
                     </div>

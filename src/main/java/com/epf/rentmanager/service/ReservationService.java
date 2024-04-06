@@ -8,11 +8,17 @@ import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.model.Vehicle;
+import com.epf.rentmanager.persistence.ConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +42,40 @@ public class ReservationService {
                 throw new ServiceException("Un client ne peut pas louer une meme voiture plus de 7jours d'affiler");
             }
 
+            // Vérification de la contrainte
+            boolean Available = isVehicleAvailableForPeriod(reservation.getVehicle().getId(), beginDate, endDate);
+            System.out.println("Available "+ Available);
+            if (Available==false) {
+                throw new ServiceException("La voiture est déjà réservée pendant cette période.");
+            }
             return reservationDao.create(reservation);
         } catch (DaoException e) {
             e.printStackTrace();
             throw new ServiceException(e);
         }
     }
+
+    private boolean isVehicleAvailableForPeriod(long vehicleId, LocalDate startDate, LocalDate endDate) throws ServiceException {
+        try {
+            List<Reservation> reservations = reservationDao.findResaByVehicleId(vehicleId);
+            boolean dispo = true;
+            for (Reservation resa : reservations) {
+                // Vérifier s'il y a une intersection entre les périodes de réservation
+                System.out.print("startDate==resa.getFin()");
+                System.out.println(startDate.equals(resa.getFin()));
+                if (startDate.equals(resa.getFin())) {
+                    dispo= false; // Il y a un chevauchement, la voiture n'est pas disponible
+                }
+                System.out.println("start date: "+ startDate + " resa.getFin(): " + resa.getFin() + dispo);
+            }
+
+            return dispo; // Aucun chevauchement, la voiture est disponible
+        } catch (DaoException e) {
+            e.printStackTrace();
+            throw new ServiceException(e);
+        }
+    }
+
 
     public long delete(Reservation reservation) throws ServiceException {
         try {
@@ -56,6 +90,14 @@ public class ReservationService {
             LocalDate beginDate = newRent.getDebut();
             LocalDate endDate = newRent.getFin();
             Period diff = Period.between(beginDate, endDate);
+            if (diff.getDays() > 7 || diff.getMonths() > 0 || diff.getYears() > 0){
+                throw new ServiceException("Un client ne peut pas louer une meme voiture plus de 7jours d'affiler");
+            }
+            boolean Available = isVehicleAvailableForPeriod(newRent.getVehicle().getId(), beginDate, endDate);
+            System.out.println("Available "+ Available);
+            if (Available==false) {
+                throw new ServiceException("La voiture est déjà réservée pendant cette période.");
+            }
             reservationDao.update(id, newRent);
         } catch (DaoException e) {
             e.printStackTrace();

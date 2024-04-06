@@ -1,2 +1,4 @@
 com\ensta\rentmanager\ClientServiceTest.class
+com\ensta\rentmanager\VehicleServiceTest.class
 epf\AppTest.class
+com\ensta\rentmanager\ReservationServiceTest.class
