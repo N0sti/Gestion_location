@@ -9,12 +9,15 @@ import java.util.List;
 
 import org.h2.tools.DeleteDbFiles;
 
-import com.epf.rentmanager.persistence.ConnectionManager;
-
 public class FillDatabase {
 
 
     public static void main(String[] args) throws Exception {
+        /**
+         * Point d'entrée principal du programme. Il initialise la base de données et insère des données initiales.
+         * @param args Les arguments de la ligne de commande.
+         * @throws Exception en cas d'exception lors de l'exécution du programme.
+         */
         try {
             DeleteDbFiles.execute("~", "RentManagerDatabase", true);
             insertWithPreparedStatement();
@@ -24,24 +27,23 @@ public class FillDatabase {
     }
 
 	public static void insertWithPreparedStatement() throws SQLException {
+        /**
+         * Insère des données initiales dans les tables de la base de données en utilisant des requêtes préparées.
+         * @throws SQLException en cas d'erreur lors de l'exécution des requêtes SQL.
+         */
         Connection connection = ConnectionManager.getConnection();
         PreparedStatement createPreparedStatement = null;
-
         List<String> createTablesQueries = new ArrayList<>();
         createTablesQueries.add("CREATE TABLE IF NOT EXISTS Client(id INT auto_increment primary key, nom VARCHAR(100), prenom VARCHAR(100), email VARCHAR(100), naissance DATETIME)");
         createTablesQueries.add("CREATE TABLE IF NOT EXISTS Vehicle(id INT primary key auto_increment, constructeur VARCHAR(100), modele VARCHAR(100), nb_places TINYINT(255))");
         createTablesQueries.add("CREATE TABLE IF NOT EXISTS Reservation(id INT primary key auto_increment, client_id INT, foreign key(client_id) REFERENCES Client(id), vehicle_id INT, foreign key(vehicle_id) REFERENCES Vehicle(id), debut DATETIME, fin DATETIME)");
-
         try {
             connection.setAutoCommit(false);
-
             for (String createQuery : createTablesQueries) {
             	createPreparedStatement = connection.prepareStatement(createQuery);
 	            createPreparedStatement.executeUpdate();
 	            createPreparedStatement.close();
             }
-
-            // Remplissage de la base avec des Vehicules et des Clients
             Statement stmt = connection.createStatement();
             stmt.execute("INSERT INTO Vehicle(constructeur, modele, nb_places) VALUES('Renault', 'citroen', 4)");
             stmt.execute("INSERT INTO Vehicle(constructeur, modele, nb_places) VALUES('Peugeot', '106', 4)");

@@ -5,25 +5,27 @@ import com.epf.rentmanager.dao.ReservationDao;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Reservation;
+import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.service.ReservationService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ReservationServiceTest {
     @Test
     void testCreate_ShouldThrowException_WhenRentMoreThan7Days() {
-        // Arrange
         ReservationDao reservationDaoMock = mock(ReservationDao.class);
         ReservationService reservationService = new ReservationService(reservationDaoMock);
         Reservation reservation = new Reservation();
         reservation.setDebut(LocalDate.now());
-        reservation.setFin(LocalDate.now().plusDays(8)); // Rent for more than 7 days
-        // Act & Assert
+        reservation.setFin(LocalDate.now().plusDays(8));
         try {
             reservationService.create(reservation);
             Assertions.fail("Expected a ServiceException to be thrown");
@@ -34,16 +36,36 @@ public class ReservationServiceTest {
 
     @Test
     void testDelete_ShouldDeleteRent() throws ServiceException, DaoException {
-        // Arrange
         ReservationDao reservationDaoMock = mock(ReservationDao.class);
         ReservationService reservationService = new ReservationService(reservationDaoMock);
         Reservation reservation = new Reservation();
         reservation.setId(1L);
-        // Act
-        when(reservationDaoMock.delete(reservation)).thenReturn(1L); // Assuming deletion is successful
+        when(reservationDaoMock.delete(reservation)).thenReturn(1L);
         long deletedId = reservationService.delete(reservation);
-        // Assert
         Assertions.assertEquals(1L, deletedId);
+    }
+    @Test
+    void testVerification_ShouldReturnTrue_WhenVehicleAvailable() throws ServiceException, DaoException {
+        // Arrange
+        ReservationDao reservationDaoMock = mock(ReservationDao.class);
+        ReservationService reservationService = new ReservationService(reservationDaoMock);
+        Reservation reservation = new Reservation();
+        reservation.setDebut(LocalDate.now());
+        reservation.setFin(LocalDate.now().plusDays(2));
+        reservation.setVehicle(new Vehicle(1L));
+        when(reservationDaoMock.findResaByVehicleId(1L)).thenReturn(new ArrayList<>());
+        boolean result = reservationService.verification(reservation);
+        assertTrue(result);
+    }
+
+    @Test
+    void testEdit_ShouldThrowException_WhenRentNotPossible() {
+        ReservationDao reservationDaoMock = mock(ReservationDao.class);
+        ReservationService reservationService = new ReservationService(reservationDaoMock);
+        Reservation reservation = new Reservation();
+        reservation.setDebut(LocalDate.now());
+        reservation.setFin(LocalDate.now().plusDays(8));
+        assertThrows(ServiceException.class, () -> reservationService.edit(1L, reservation));
     }
 
 }

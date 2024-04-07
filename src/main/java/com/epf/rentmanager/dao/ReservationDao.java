@@ -44,7 +44,6 @@ public class ReservationDao {
 	public VehicleDao getVehicleDao() {
 		return vehicleDao;
 	}
-
 	public void setClientDao(ClientDao clientDao) {
 		this.clientDao = clientDao;
 	}
@@ -55,6 +54,12 @@ public class ReservationDao {
 
 
 	public long create(Reservation reservation) throws DaoException {
+		/**
+		 * Crée une nouvelle réservation dans la base de données.
+		 * @param reservation La réservation à créer.
+		 * @return l'identifiant de la réservation créée.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		long ID = 0;
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -78,32 +83,30 @@ public class ReservationDao {
 	}
 
 	public long delete(Reservation rent) throws DaoException {
+		/**
+		 * Supprime une réservation de la base de données.
+		 * @param rent La réservation à supprimer.
+		 * @return l'identifiant de la réservation supprimée.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		long reservationId = rent.getId();
 		try (
 				Connection connection = ConnectionManager.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(DELETE_RESERVATION_QUERY)
 		) {
-
 			preparedStatement.setLong(1, reservationId);
 			preparedStatement.execute();
-
-			// Compter le nombre total de réservations restantes
 			int count = count();
-			System.out.println("count" + count);
-
-			// Si le nombre total de réservations est de 0, réinitialiser les ID
 			if (count == 0) {
 				Statement updateStatement = connection.createStatement();
 				updateStatement.executeUpdate("ALTER TABLE Reservation ALTER COLUMN id RESTART WITH 1");
 				updateStatement.close();
 			} else {
-				// decrementer les IDs des réservations restantes
 				PreparedStatement updateStatement = connection.prepareStatement("UPDATE Reservation SET id = id - 1 WHERE id > ?");
 				updateStatement.setLong(1, reservationId);
 				updateStatement.executeUpdate();
 				updateStatement.close();
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DaoException(e);
@@ -114,6 +117,12 @@ public class ReservationDao {
 
 
 	public List<Reservation> findResaByClientId(long clientId) throws DaoException {
+		/**
+		 * Récupère les réservations d'un client à partir de son identifiant.
+		 * @param clientId L'identifiant du client.
+		 * @return Une liste contenant les réservations du client.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		List<Reservation> reservation = new ArrayList<Reservation>();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -122,13 +131,11 @@ public class ReservationDao {
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
 				long id = rs.getInt("id");
-				long vehicleId = rs.getInt("vehicle_id"); // Fetch vehicle_id from ResultSet
+				long vehicleId = rs.getInt("vehicle_id");
 				Client client = new Client(clientId);
-				Vehicle vehicle = new Vehicle(vehicleId); // Now vehicleId is defined
-
+				Vehicle vehicle = new Vehicle(vehicleId);
 				LocalDate debut = rs.getDate("debut").toLocalDate();
 				LocalDate fin = rs.getDate("fin").toLocalDate();
-
 				reservation.add(new Reservation(id, client, vehicle, debut, fin));
 			}
 			connection.close();
@@ -140,7 +147,13 @@ public class ReservationDao {
 	}
 
 
-	public List<Reservation> findResaByVehicleId(long vehicleId) throws DaoException, ServiceException {
+	public List<Reservation> findResaByVehicleId(long vehicleId) throws DaoException {
+		/**
+		 * Récupère les réservations d'un véhicule à partir de son identifiant.
+		 * @param vehicleId L'identifiant du véhicule.
+		 * @return Une liste contenant les réservations du véhicule.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		List<Reservation> reservation = new ArrayList<Reservation>();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -152,10 +165,8 @@ public class ReservationDao {
 				long clientId = (rs.getInt("client_id"));
 				Client client = new Client(clientId);
 				Vehicle vehicle = new Vehicle(vehicleId);
-
 				LocalDate debut = (rs.getDate("debut").toLocalDate());
 				LocalDate fin = (rs.getDate("fin").toLocalDate());
-
 				reservation.add(new Reservation(id, client, vehicle, debut, fin));
 			}
 			connection.close();
@@ -167,6 +178,11 @@ public class ReservationDao {
 	}
 
 	public List<Reservation> findAll() throws DaoException {
+		/**
+		 * Récupère toutes les réservations présentes dans la base de données.
+		 * @return Une liste contenant toutes les réservations présentes en base.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		List<Reservation> reservation = new ArrayList<Reservation>();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -178,10 +194,8 @@ public class ReservationDao {
 				long vehicleId = (rs.getInt("vehicle_id"));
 				Client client = new Client(clientId);
 				Vehicle vehicle = new Vehicle(vehicleId);
-
 				LocalDate debut = (rs.getDate("debut").toLocalDate());
 				LocalDate fin = (rs.getDate("fin").toLocalDate());
-
 				reservation.add(new Reservation(id, client, vehicle, debut, fin));
 			}
 			connection.close();
@@ -192,6 +206,12 @@ public class ReservationDao {
 		return reservation;
 	}
 	public void update(long id, Reservation newData) throws DaoException {
+		/**
+		 * Met à jour les informations d'une réservation dans la base de données.
+		 * @param id L'identifiant de la réservation à mettre à jour.
+		 * @param newData Les nouvelles informations de la réservation.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		try {
 			Connection connection = ConnectionManager.getConnection();
 			PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_RESERVATION_QUERY);
@@ -201,7 +221,6 @@ public class ReservationDao {
 			preparedStatement.setDate(4, Date.valueOf(newData.getFin()));
 			preparedStatement.setLong(5, id);
 			preparedStatement.executeUpdate();
-
 			preparedStatement.close();
 			connection.close();
 		} catch (SQLException e) {
@@ -210,43 +229,46 @@ public class ReservationDao {
 		}
 	}
 	public Reservation findById(long id) throws DaoException {
+		/**
+		 * Recherche une réservation dans la base de données par son identifiant.
+		 * @param id L'identifiant de la réservation à rechercher.
+		 * @return La réservation trouvée, ou null si aucune réservation correspondante n'est trouvée.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		Reservation reservation = null;
 		try {
 			Connection connection = ConnectionManager.getConnection();
-			System.out.println(reservation);
 			PreparedStatement preparedStatement = connection.prepareStatement(FIND_RESERVATIONS_QUERY_BYID);
 			preparedStatement.setLong(1, id);
-			System.out.println("test2" + reservation);
 			ResultSet rs = preparedStatement.executeQuery();
-
 			while (rs.next()) {
 				reservation = new Reservation(id, clientDao.findById(rs.getLong("client_id")),
 						vehicleDao.findById(rs.getLong("vehicle_id")),
 						rs.getDate("debut").toLocalDate(), rs.getDate("fin").toLocalDate());
 			}
-
 			preparedStatement.close();
 			connection.close();
 		} catch (SQLException | DaoException e) {
 			e.printStackTrace();
 			throw new DaoException(e);
 		}
-		System.out.println(reservation);
 		return reservation;
 
 	}
 	public int count() throws DaoException {
+		/**
+		 * Compte le nombre total de réservations dans la base de données.
+		 * @return Le nombre total de réservations.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		try {
 			int cpt = 0;
-
 			Connection connection = ConnectionManager.getConnection();
 			Statement statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery(COUNT_RESERVATION_QUERY);
-
 			if (rs.next()) {
 				cpt = rs.getInt("count");
 			}
-
 			statement.close();
 			connection.close();
 			return cpt;

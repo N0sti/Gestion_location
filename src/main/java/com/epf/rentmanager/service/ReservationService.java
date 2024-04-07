@@ -1,24 +1,13 @@
 package com.epf.rentmanager.service;
 
-
-import com.epf.rentmanager.dao.ClientDao;
 import com.epf.rentmanager.dao.ReservationDao;
-import com.epf.rentmanager.dao.VehicleDao;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Reservation;
-import com.epf.rentmanager.model.Vehicle;
-import com.epf.rentmanager.persistence.ConnectionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,20 +22,16 @@ public class ReservationService {
 
 
     public long create(Reservation reservation) throws ServiceException {
+        /**
+         * Crée une nouvelle réservation.
+         * Vérifie d'abord si la réservation est possible en utilisant la méthode {@link #verification}.
+         * @param reservation La réservation à créer.
+         * @return L'identifiant de la réservation créée.
+         * @throws ServiceException Si la réservation n'est pas possible ou s'il y a une erreur de service.
+         */
         try {
-            LocalDate beginDate = reservation.getDebut();
-            LocalDate endDate = reservation.getFin();
-            Period diff = Period.between(beginDate, endDate);
-
-            if (diff.getDays() > 7 || diff.getMonths() > 0 || diff.getYears() > 0){
-                throw new ServiceException("Un client ne peut pas louer une meme voiture plus de 7jours d'affiler");
-            }
-
-            // Vérification de la contrainte
-            boolean Available = isVehicleAvailableForPeriod(reservation.getVehicle().getId(), beginDate, endDate);
-            System.out.println("Available "+ Available);
-            if (Available==false) {
-                throw new ServiceException("La voiture est déjà réservée pendant cette période.");
+            if (!verification(reservation)) {
+                throw new ServiceException("La réservation n'est pas possible.");
             }
             return reservationDao.create(reservation);
         } catch (DaoException e) {
@@ -54,30 +39,60 @@ public class ReservationService {
             throw new ServiceException(e);
         }
     }
-
+    public boolean verification(Reservation reservation) throws ServiceException {
+        /**
+         * Vérifie si la création ou la modification d'une réservation est possible.
+         * @param reservation La réservation à vérifier.
+         * @return true si la réservation est possible, sinon false.
+         * @throws ServiceException Si la réservation n'est pas possible en raison de contraintes métier.
+         */
+        try {
+            LocalDate beginDate = reservation.getDebut();
+            LocalDate endDate = reservation.getFin();
+            Period diff = Period.between(beginDate, endDate);
+            if (diff.getDays() > 7 || diff.getMonths() > 0 || diff.getYears() > 0){
+                throw new ServiceException("Un client ne peut pas louer une même voiture plus de 7 jours d'affilée.");
+            }
+            boolean available = isVehicleAvailableForPeriod(reservation.getVehicle().getId(), beginDate, endDate);
+            if (!available) {
+                throw new ServiceException("La voiture est déjà réservée pendant cette période.");
+            }
+            return true;
+        } catch (ServiceException e) {
+            throw e;
+        }
+    }
     private boolean isVehicleAvailableForPeriod(long vehicleId, LocalDate startDate, LocalDate endDate) throws ServiceException {
+        /**
+         * Vérifie si un véhicule est disponible pour une période donnée.
+         * @param vehicleId L'identifiant du véhicule à vérifier.
+         * @param startDate La date de début de la période.
+         * @param endDate La date de fin de la période.
+         * @return true si le véhicule est disponible, sinon false.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             List<Reservation> reservations = reservationDao.findResaByVehicleId(vehicleId);
             boolean dispo = true;
             for (Reservation resa : reservations) {
-                // Vérifier s'il y a une intersection entre les périodes de réservation
-                System.out.print("startDate==resa.getFin()");
-                System.out.println(startDate.equals(resa.getFin()));
                 if (startDate.equals(resa.getFin())) {
-                    dispo= false; // Il y a un chevauchement, la voiture n'est pas disponible
+                    dispo= false;
                 }
-                System.out.println("start date: "+ startDate + " resa.getFin(): " + resa.getFin() + dispo);
             }
-
-            return dispo; // Aucun chevauchement, la voiture est disponible
+            return dispo;
         } catch (DaoException e) {
             e.printStackTrace();
             throw new ServiceException(e);
         }
     }
 
-
     public long delete(Reservation reservation) throws ServiceException {
+        /**
+         * Supprime une réservation.
+         * @param reservation La réservation à supprimer.
+         * @return L'identifiant de la réservation supprimée.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             return reservationDao.delete(reservation);
         } catch (DaoException e) {
@@ -86,17 +101,16 @@ public class ReservationService {
         }
     }
     public void edit(long id, Reservation newRent) throws ServiceException {
+        /**
+         * Modifie une réservation existante.
+         * Vérifie d'abord si la réservation modifiée est possible en utilisant la méthode {@link #verification}.
+         * @param id L'identifiant de la réservation à modifier.
+         * @param newRent Les nouvelles données de la réservation.
+         * @throws ServiceException Si la réservation n'est pas possible ou s'il y a une erreur de service.
+         */
         try {
-            LocalDate beginDate = newRent.getDebut();
-            LocalDate endDate = newRent.getFin();
-            Period diff = Period.between(beginDate, endDate);
-            if (diff.getDays() > 7 || diff.getMonths() > 0 || diff.getYears() > 0){
-                throw new ServiceException("Un client ne peut pas louer une meme voiture plus de 7jours d'affiler");
-            }
-            boolean Available = isVehicleAvailableForPeriod(newRent.getVehicle().getId(), beginDate, endDate);
-            System.out.println("Available "+ Available);
-            if (Available==false) {
-                throw new ServiceException("La voiture est déjà réservée pendant cette période.");
+            if (!verification(newRent)) {
+                throw new ServiceException("La réservation n'est pas possible.");
             }
             reservationDao.update(id, newRent);
         } catch (DaoException e) {
@@ -106,6 +120,12 @@ public class ReservationService {
     }
 
     public List<Reservation> findResaByClientId(long id) throws ServiceException {
+        /**
+         * Trouve toutes les réservations associées à un client donné.
+         * @param id L'identifiant du client.
+         * @return Une liste de réservations associées au client.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             List<Reservation> reservation = new ArrayList<Reservation>();
             reservation = reservationDao.findResaByClientId(id);
@@ -121,6 +141,12 @@ public class ReservationService {
     }
 
     public List<Reservation> findResaByVehicleId(long id) throws ServiceException {
+        /**
+         * Trouve toutes les réservations associées à un véhicule donné.
+         * @param id L'identifiant du véhicule.
+         * @return Une liste de réservations associées au véhicule.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             List<Reservation> reservation = new ArrayList<Reservation>();
             reservation = reservationDao.findResaByVehicleId(id);
@@ -135,16 +161,12 @@ public class ReservationService {
         }
     }
 
-    public void modify(long id, Reservation newData) throws ServiceException {
-        try {
-            reservationDao.update(id, newData);
-        } catch (DaoException e) {
-            e.printStackTrace();
-            throw new ServiceException(e);
-        }
-    }
-
     public List<Reservation> findAll() throws ServiceException {
+        /**
+         * Récupère toutes les réservations.
+         * @return Une liste contenant toutes les réservations.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             List<Reservation> reservation = new ArrayList<Reservation>();
             reservation = reservationDao.findAll();
@@ -160,6 +182,12 @@ public class ReservationService {
     }
 
     public Reservation findById(long id) throws ServiceException {
+        /**
+         * Trouve une réservation par son identifiant.
+         * @param id L'identifiant de la réservation à rechercher.
+         * @return La réservation correspondant à l'identifiant spécifié.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             return reservationDao.findById(id);
         } catch (DaoException e) {
@@ -168,6 +196,11 @@ public class ReservationService {
         }
     }
     public int count() throws ServiceException {
+        /**
+         * Compte le nombre total de réservations.
+         * @return Le nombre total de réservations.
+         * @throws ServiceException Si une erreur survient lors de l'accès aux données.
+         */
         try {
             ReservationDao reservationDao = new ReservationDao();
             return reservationDao.count();

@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.model.Client;
@@ -37,8 +36,13 @@ public class ClientDao {
 	private static final String UPDATE_CLIENT_QUERY = "UPDATE Client SET nom=?, prenom=?, email=?, naissance=? WHERE id=?;";
 	private static final String COUNT_CLIENTS_QUERY = "SELECT COUNT(id) AS count FROM Client;";
 	public long create(Client client) throws DaoException {
+		/**
+		 * Crée un nouveau client dans la base de données.
+		 * @param client Le client à créer.
+		 * @return l'identifiant du client créé.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		long ID = 0;
-		System.out.println("create");
 		try {
 			Connection connection = ConnectionManager.getConnection();
 			PreparedStatement preparedStatement = connection.prepareStatement(CREATE_CLIENT_QUERY, Statement.RETURN_GENERATED_KEYS);
@@ -61,6 +65,12 @@ public class ClientDao {
 	}
 
 	public long delete(Client client) throws DaoException {
+		/**
+		 * Supprime un client de la base de données.
+		 * @param client Le client à supprimer.
+		 * @return l'identifiant du client supprimé.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		long clientId = client.getId();
 		try (
 				Connection connection = ConnectionManager.getConnection();
@@ -68,20 +78,6 @@ public class ClientDao {
 		) {
 			preparedStatement.setLong(1, clientId);
 			preparedStatement.execute();
-
-			/*// If client with ID 1 is deleted or there are no more clients left, reset the ID counter
-			if (clientId == 1) {
-				Statement updateStatement = connection.createStatement();
-				updateStatement.executeUpdate("ALTER TABLE Client ALTER COLUMN id RESTART WITH 1");
-				updateStatement.close();
-				System.out.println("clientid"+clientId);
-			}
-
-			// decrement the IDs of remaining clients
-			PreparedStatement updateStatement = connection.prepareStatement("UPDATE Client SET id = id - 1 WHERE id > ?");
-			updateStatement.setLong(1, clientId);
-			updateStatement.executeUpdate();
-			updateStatement.close();*/
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -91,6 +87,12 @@ public class ClientDao {
 	}
 
 	public Client findById(long id) throws DaoException {
+		/**
+		 * Recherche un client dans la base de données par son identifiant.
+		 * @param id L'identifiant du client à rechercher.
+		 * @return Le client trouvé, ou un client vide si aucun client correspondant n'est trouvé.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		Client client = new Client();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -113,6 +115,11 @@ public class ClientDao {
 	}
 
 	public List<Client> findAll() throws DaoException {
+		/**
+		 * Récupère tous les clients présents dans la base de données.
+		 * @return Une liste contenant tous les clients présents en base.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		List<Client> clients = new ArrayList<Client>();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -125,7 +132,6 @@ public class ClientDao {
 				String email = rs.getString("email");
 				LocalDate date = rs.getDate("naissance").toLocalDate();
 				clients.add(new Client(id, nom, prenom, email, date));
-
 			}
 			connection.close();
 		} catch (SQLException e) {
@@ -136,12 +142,17 @@ public class ClientDao {
 	}
 
 	public int countSameEmail(String email) throws DaoException {
+		/**
+		 * Compte le nombre de clients ayant la même adresse e-mail dans la base de données.
+		 * @param email L'adresse e-mail à rechercher.
+		 * @return Le nombre de clients ayant la même adresse e-mail.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		int nbClients = 0;
 		try {
 			Connection connection = ConnectionManager.getConnection();
 			PreparedStatement preparedStatement = connection.prepareStatement(COUNT_SAME_EMAIL_QUERY);
 			preparedStatement.setString(1, email);
-
 			ResultSet rs = preparedStatement.executeQuery();
 			while (rs.next()) {
 				nbClients = rs.getInt("count");
@@ -154,17 +165,20 @@ public class ClientDao {
 		return nbClients;
 	}
 	public int count() throws DaoException {
+		/**
+		 * Compte le nombre total de clients dans la base de données.
+		 * @return Le nombre total de clients.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		try {
 			int cpt = 0;
 
 			Connection connection = ConnectionManager.getConnection();
 			Statement statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery(COUNT_CLIENTS_QUERY);
-
 			if (rs.next()) {
 				cpt = rs.getInt("count");
 			}
-
 			statement.close();
 			connection.close();
 			return cpt;
@@ -174,6 +188,12 @@ public class ClientDao {
 		}
 	}
 	public void update(long id, Client newClient) throws DaoException {
+		/**
+		 * Met à jour les informations d'un client dans la base de données.
+		 * @param id L'identifiant du client à mettre à jour.
+		 * @param newClient Les nouvelles informations du client.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		try (
 				Connection connection = ConnectionManager.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_CLIENT_QUERY)

@@ -1,4 +1,5 @@
 package com.epf.rentmanager.dao;
+
 import com.epf.rentmanager.exception.DaoException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,9 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.persistence.ConnectionManager;
 import org.springframework.stereotype.Repository;
@@ -33,6 +31,12 @@ public class VehicleDao {
 		return instance;
 	}
 	public long create(Vehicle vehicle) throws DaoException {
+		/**
+		 * Crée un nouveau véhicule dans la base de données.
+		 * @param vehicle Le véhicule à créer.
+		 * @return l'identifiant du véhicule créé.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		long ID = 0;
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -46,23 +50,19 @@ public class VehicleDao {
 				ID = rs.getLong("id");
 			}
 			preparedStatement.close();
-			// Adjust ID if needed
 			if (ID > 0) {
-				// Check if there are lower IDs available
 				PreparedStatement availableIdStatement = connection.prepareStatement("SELECT MIN(id) FROM Vehicle WHERE id > ?");
 				availableIdStatement.setLong(1, ID);
 				ResultSet availableIdResultSet = availableIdStatement.executeQuery();
 				if (availableIdResultSet.next()) {
 					long newID = availableIdResultSet.getLong(1);
 					if (!availableIdResultSet.wasNull()) {
-						// Use the available lower ID
 						ID = newID;
 					}
 				}
 				availableIdStatement.close();
 			}
 			connection.close();
-
 			return ID;
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -71,6 +71,12 @@ public class VehicleDao {
 	}
 
 	public long delete(Vehicle vehicle) throws DaoException {
+		/**
+		 * Supprime un véhicule de la base de données.
+		 * @param vehicle Le véhicule à supprimer.
+		 * @return l'identifiant du véhicule supprimé.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		long vehicleId = vehicle.getId();
 		try (
 				Connection connection = ConnectionManager.getConnection();
@@ -78,19 +84,6 @@ public class VehicleDao {
 		) {
 			preparedStatement.setLong(1, vehicleId);
 			preparedStatement.execute();
-			/*// If vehicule with ID 1 is deleted or there are no more clients left, reset the ID counter
-			if (vehicleId == 1) {
-				Statement updateStatement = connection.createStatement();
-				updateStatement.executeUpdate("ALTER TABLE Vehicle ALTER COLUMN id RESTART WITH 1");
-				updateStatement.close();
-				System.out.println("vehicleId :"+vehicleId);
-			}
-			// decrement the IDs of remaining clients
-			PreparedStatement updateStatement = connection.prepareStatement("UPDATE Vehicle SET id = id - 1 WHERE id > ?");
-			updateStatement.setLong(1, vehicleId);
-			updateStatement.executeUpdate();
-			updateStatement.close();*/
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 			throw new DaoException(e);
@@ -99,6 +92,12 @@ public class VehicleDao {
 	}
 
 	public Vehicle findById(long id) throws DaoException {
+		/**
+		 * Recherche un véhicule dans la base de données par son identifiant.
+		 * @param id L'identifiant du véhicule à rechercher.
+		 * @return Le véhicule trouvé, ou un véhicule vide si aucun véhicule correspondant n'est trouvé.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		Vehicle vehicle = new Vehicle();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -108,7 +107,7 @@ public class VehicleDao {
 			while (rs.next()) {
 				vehicle.setId(id);
 				vehicle.setConstructeur(rs.getString("constructeur"));
-				vehicle.setModele(rs.getString("modele")); //wip
+				vehicle.setModele(rs.getString("modele"));
 				vehicle.setNb_places(rs.getInt("nb_places"));
 			}
 			connection.close();
@@ -120,6 +119,11 @@ public class VehicleDao {
 	}
 
 	public List<Vehicle> findAll() throws DaoException {
+		/**
+		 * Récupère tous les véhicules présents dans la base de données.
+		 * @return Une liste contenant tous les véhicules présents en base.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		List<Vehicle> vehicles = new ArrayList<Vehicle>();
 		try {
 			Connection connection = ConnectionManager.getConnection();
@@ -128,10 +132,9 @@ public class VehicleDao {
 			while (rs.next()) {
 				long id = (rs.getInt("id"));
 				String constructeur = (rs.getString("constructeur"));
-				String modele = (rs.getString("modele")); //wip
+				String modele = (rs.getString("modele"));
 				int nb_places = (rs.getInt("nb_places"));
-
-				vehicles.add(new Vehicle(id, constructeur, modele, nb_places)); //wip
+				vehicles.add(new Vehicle(id, constructeur, modele, nb_places));
 			}
 			connection.close();
 		} catch (SQLException e) {
@@ -142,6 +145,12 @@ public class VehicleDao {
 	}
 
 	public void update(long id, Vehicle newVehicle) throws DaoException {
+		/**
+		 * Met à jour les informations d'un véhicule dans la base de données.
+		 * @param id L'identifiant du véhicule à mettre à jour.
+		 * @param newVehicle Les nouvelles informations du véhicule.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		try (
 				Connection connection = ConnectionManager.getConnection();
 				PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_VEHICLE_QUERY)
@@ -158,17 +167,19 @@ public class VehicleDao {
 	}
 
 	public int count() throws DaoException {
+		/**
+		 * Compte le nombre total de véhicules dans la base de données.
+		 * @return Le nombre total de véhicules.
+		 * @throws DaoException en cas d'erreur lors de la connexion à la base de données ou dans l'exécution de la requête.
+		 */
 		try {
 			int cpt = 0;
-
 			Connection connection = ConnectionManager.getConnection();
 			Statement statement = connection.createStatement();
 			ResultSet rs = statement.executeQuery(COUNT_VEHICLES_QUERY);
-
 			if (rs.next()) {
 				cpt = rs.getInt("count");
 			}
-
 			statement.close();
 			connection.close();
 			return cpt;
